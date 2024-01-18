@@ -36,6 +36,11 @@ public class IdleGame : MonoBehaviour
 
     #endregion private variables
 
+    private void Start()
+    {
+        Debug.Log(GetValue("123456"));
+    }
+
     #region public functions
 
     public void DealDamageByClick()
@@ -158,11 +163,11 @@ public class IdleGame : MonoBehaviour
         {
             var valueFloat = float.Parse(value);
             var countOfDigits = (int)Mathf.Log10(valueFloat) + 1; //all count of digits
-            var countOfDigitsAfter1000 = countOfDigits - (int)Mathf.Log10(1000) - 1; // after 1000
+            var countOfDigitsAfter1000 = countOfDigits - (int)Mathf.Log10(1000) ; // after 1000
 
             var digit = valueFloat / Mathf.Pow(10, countOfDigits - 3); //value until 1000
 
-            var newValue = digit + "+"+countOfDigitsAfter1000;
+            var newValue = digit.ToString("F0") + "+"+countOfDigitsAfter1000;
             return newValue;
         }
     }
