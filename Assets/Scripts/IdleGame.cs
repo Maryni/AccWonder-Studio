@@ -11,22 +11,22 @@ public class IdleGame : MonoBehaviour
 
     [SerializeField] private Image mainImage;
     [SerializeField] private Slider sliderHp;
-    [SerializeField] private TMP_Text textScore;
     [SerializeField] private TMP_Text textMoney;
     [SerializeField] private TMP_Text textTime;
-    [SerializeField] private TMP_Text textDamage;
+    [SerializeField] private TMP_Text textDamageSelf;
+    [SerializeField] private TMP_Text textDamageAuto;
     [SerializeField] private TMP_Text textWave;
     [SerializeField] private List<Sprite> sprites;
     [Space, SerializeField] private float minRandom;
     [SerializeField] private float maxRandom;
-    [SerializeField] private float damage;
+    [SerializeField] private float damageAuto;
+    [SerializeField] private float damageSelf;
     [SerializeField] private Stats currentEnemy;
 
     #endregion Inspector variables
 
     #region private variables
 
-    private float score;
     private float money;
     private float timer;
     private int index = 1;
@@ -41,26 +41,27 @@ public class IdleGame : MonoBehaviour
     public void DealDamageByClick()
     {
         IsEnemyDead();
-        currentEnemy.hp -= damage;
+        currentEnemy.hp -= damageSelf;
     }
 
-    public void UpgradeDamage()
+    public void UpgradeSelfDamage() //rewrite
     {
         if (money > index * upgradeIndex)
         {
             money -= index * upgradeIndex;
-            damage++;
-            UpdateDamage();
+            
         }
+
+        damageSelf++;
+        UpdateDamageSelf();
     }
 
     #endregion public functions
 
     #region private functions
 
-    private void UpdateUI()
+    private void UpdateUI() //rewrite with symbols
     {
-        textScore.text = score.ToString("F0");
         textMoney.text = money.ToString("F0");
     }
 
@@ -90,7 +91,9 @@ public class IdleGame : MonoBehaviour
 
     private void StartTimer(float value) => timerCoroutine = StartCoroutine(Timer(value));
 
-    private void UpdateDamage() => textDamage.text = damage.ToString("F0");
+    private void UpdateDamageSelf() => textDamageSelf.text = damageSelf.ToString("F0"); //rewrite to new Symbols
+
+    private void UpdateDamageAuto() => textDamageAuto.text = damageAuto.ToString("F0"); //rewrite to new Symbols
 
     private void UpdateWave() => textWave.text = indexWave.ToString("F0");
 
@@ -110,7 +113,6 @@ public class IdleGame : MonoBehaviour
         if (currentEnemy.hp <= 0)
         {
             money += currentEnemy.money;
-            score += index;
             index++;
             indexWave++;
             StopTimerCoroutine();
@@ -133,7 +135,7 @@ public class IdleGame : MonoBehaviour
     private void DealDamageByTime()
     {
         IsEnemyDead();
-        currentEnemy.hp -= damage * Time.deltaTime;
+        currentEnemy.hp -= damageAuto * Time.deltaTime;
     }
 
     #endregion private functions
