@@ -147,6 +147,25 @@ public class IdleGame : MonoBehaviour
         StartTimer(currentEnemy.time);
         sliderHp.maxValue = 1;
     }
+
+    private string GetValue(string value)
+    {
+        if(float.Parse(value) < 1000 )
+        {
+            return value;
+        }
+        else
+        {
+            var valueFloat = float.Parse(value);
+            var countOfDigits = (int)Mathf.Log10(valueFloat) + 1; //all count of digits
+            var countOfDigitsAfter1000 = countOfDigits - (int)Mathf.Log10(1000) - 1; // after 1000
+
+            var digit = valueFloat / Mathf.Pow(10, countOfDigits - 3); //value until 1000
+
+            var newValue = digit + "+"+countOfDigitsAfter1000;
+            return newValue;
+        }
+    }
 }
 
 [System.Serializable]
