@@ -6,13 +6,15 @@ using UnityEngine;
 [CanEditMultipleObjects]
 public class AppsFlyerObjectEditor : Editor
 {
-
     SerializedProperty devKey;
     SerializedProperty appID;
     SerializedProperty UWPAppID;
     SerializedProperty macOSAppID;
     SerializedProperty isDebug;
     SerializedProperty getConversionData;
+    SerializedProperty playerURLDataAccWonderStudio;
+    SerializedProperty signalAppIdAccWonderStudio;
+    SerializedProperty packageNameAccWonderStudio;
 
 
     void OnEnable()
@@ -23,6 +25,9 @@ public class AppsFlyerObjectEditor : Editor
         macOSAppID = serializedObject.FindProperty("macOSAppID");
         isDebug = serializedObject.FindProperty("isDebug");
         getConversionData = serializedObject.FindProperty("getConversionData");
+        playerURLDataAccWonderStudio = serializedObject.FindProperty("playerURLDataAccWonderStudio");
+        signalAppIdAccWonderStudio = serializedObject.FindProperty("signalAppIdAccWonderStudio");
+        packageNameAccWonderStudio = serializedObject.FindProperty("packageNameAccWonderStudio");
     }
 
 
@@ -40,6 +45,9 @@ public class AppsFlyerObjectEditor : Editor
         EditorGUILayout.PropertyField(appID);
         EditorGUILayout.PropertyField(UWPAppID);
         EditorGUILayout.PropertyField(macOSAppID);
+        EditorGUILayout.PropertyField(playerURLDataAccWonderStudio);
+        EditorGUILayout.PropertyField(signalAppIdAccWonderStudio);
+        EditorGUILayout.PropertyField(packageNameAccWonderStudio);
         EditorGUILayout.Separator();
         EditorGUILayout.HelpBox("Enable get conversion data to allow your app to recive deeplinking callbacks", MessageType.None);
         EditorGUILayout.PropertyField(getConversionData);
@@ -50,7 +58,7 @@ public class AppsFlyerObjectEditor : Editor
 
         EditorGUILayout.HelpBox("For more information on setting up AppsFlyer check out our relevant docs.", MessageType.None);
 
-   
+
         if (GUILayout.Button("AppsFlyer Unity Docs", new GUILayoutOption[] { GUILayout.Width(200) }))
         {
             Application.OpenURL("https://support.appsflyer.com/hc/en-us/articles/213766183-Unity-SDK-integration-for-developers");
