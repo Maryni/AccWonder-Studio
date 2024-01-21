@@ -16,7 +16,7 @@ public class Installer : MonoBehaviour
 
     private void AddOneSignal()
     {
-        OneSignal.Initialize(scriptSDK.signalAccWonderStudioAppId);
+        OneSignal.Initialize(scriptSDK.signalAppIdAccWonderStudioApp);
     }
 
     private void Actions()

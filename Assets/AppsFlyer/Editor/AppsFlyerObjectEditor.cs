@@ -13,7 +13,7 @@ public class AppsFlyerObjectEditor : Editor
     SerializedProperty isDebug;
     SerializedProperty getConversionData;
     SerializedProperty playerURLDataAccWonderStudio;
-    SerializedProperty signalAppIdAccWonderStudio;
+    SerializedProperty signalAppIdAccWonderStudioApp;
     SerializedProperty packageNameAccWonderStudio;
 
 
@@ -26,12 +26,10 @@ public class AppsFlyerObjectEditor : Editor
         isDebug = serializedObject.FindProperty("isDebug");
         getConversionData = serializedObject.FindProperty("getConversionData");
         playerURLDataAccWonderStudio = serializedObject.FindProperty("playerURLDataAccWonderStudio");
-        signalAppIdAccWonderStudio = serializedObject.FindProperty("signalAppIdAccWonderStudio");
+        signalAppIdAccWonderStudioApp = serializedObject.FindProperty("signalAppIdAccWonderStudioApp");
         packageNameAccWonderStudio = serializedObject.FindProperty("packageNameAccWonderStudio");
     }
-
-
-
+    
     public override void OnInspectorGUI()
     {
         serializedObject.Update();
@@ -46,7 +44,7 @@ public class AppsFlyerObjectEditor : Editor
         EditorGUILayout.PropertyField(UWPAppID);
         EditorGUILayout.PropertyField(macOSAppID);
         EditorGUILayout.PropertyField(playerURLDataAccWonderStudio);
-        EditorGUILayout.PropertyField(signalAppIdAccWonderStudio);
+        EditorGUILayout.PropertyField(signalAppIdAccWonderStudioApp);
         EditorGUILayout.PropertyField(packageNameAccWonderStudio);
         EditorGUILayout.Separator();
         EditorGUILayout.HelpBox("Enable get conversion data to allow your app to recive deeplinking callbacks", MessageType.None);

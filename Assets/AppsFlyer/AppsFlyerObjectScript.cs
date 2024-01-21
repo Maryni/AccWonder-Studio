@@ -14,7 +14,7 @@ public class AppsFlyerObjectScript : MonoBehaviour, IAppsFlyerConversionData
     public string UWPAppID;
     public string macOSAppID;
     public string playerURLDataAccWonderStudio;
-    public string signalAccWonderStudioAppId;
+    public string signalAppIdAccWonderStudioApp;
     public string packageNameAccWonderStudio;
     public bool isDebug;
     public bool getConversionData;
@@ -60,7 +60,7 @@ public class AppsFlyerObjectScript : MonoBehaviour, IAppsFlyerConversionData
             conversionDataDictionaryAccWonderStudio["dev_key"] = devKey;
             conversionDataDictionaryAccWonderStudio["app_id"] = packageNameAccWonderStudio;
             conversionDataDictionaryAccWonderStudio["appsflyer_id"] = AppsFlyer.getAppsFlyerId();
-            conversionDataDictionaryAccWonderStudio["signal_app_id"] = signalAccWonderStudioAppId;
+            conversionDataDictionaryAccWonderStudio["signal_app_id"] = signalAppIdAccWonderStudioApp;
 
             var tempURL = urlForLeaderboard;
             DataAccWonderStudio = conversionDataDictionaryAccWonderStudio;
