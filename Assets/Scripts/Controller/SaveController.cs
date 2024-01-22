@@ -2,6 +2,7 @@ using System;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.UI;
 
 public enum HeroRarityType
 {
@@ -82,7 +83,7 @@ public class SaveController : MonoBehaviour
 }
 
 [System.Serializable]
-public struct SupportHeroes
+public class SupportHeroes
 {
     public HeroRarityType RarityType;
     public int Id;
@@ -92,7 +93,7 @@ public struct SupportHeroes
     public float Damage;
     public float DamageMod;
     public float CritChance;
-    public Sprite SpriteEnemy;
+    public Image SpriteEnemy;
     public float Cost;
     public float CostMod;
     public float CostRarity;
@@ -106,14 +107,13 @@ public class PlayerData
     public int Souls;
     public int Blood;
     public int LastLevelComplete;
-
 }
 
 [System.Serializable]
 public class LevelData
 {
     public int LevelId;
-    public Sprite SpriteBackground;
+    public Image SpriteBackground;
     public bool IsComplete;
     public Stats Stats;
 }
@@ -123,6 +123,6 @@ public struct Stats
 {
     public float Hp;
     public float Gold;
-    public Sprite SpriteEnemy;
+    public Image SpriteEnemy;
     public string Name;
 }
