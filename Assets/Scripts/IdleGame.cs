@@ -4,6 +4,7 @@ using UnityEngine;
 using TMPro;
 using UnityEngine.UI;
 using Random = UnityEngine.Random;
+using System;
 
 public class IdleGame : MonoBehaviour
 {
@@ -38,7 +39,11 @@ public class IdleGame : MonoBehaviour
 
     private void Start()
     {
-        Debug.Log(GetValue("123456"));
+        //Debug.Log(GetValue("123456"));
+        int number = 123456;
+
+        // Виведіть число в форматі "E0"
+        Debug.Log(number.ToString("E3"));
     }
 
     #region public functions
@@ -46,7 +51,7 @@ public class IdleGame : MonoBehaviour
     public void DealDamageByClick()
     {
         IsEnemyDead();
-        currentEnemy.hp -= damageSelf;
+        currentEnemy.Hp -= damageSelf;
     }
 
     public void UpgradeSelfDamage() //rewrite
@@ -54,7 +59,6 @@ public class IdleGame : MonoBehaviour
         if (money > index * upgradeIndex)
         {
             money -= index * upgradeIndex;
-            
         }
 
         damageSelf++;
@@ -86,7 +90,7 @@ public class IdleGame : MonoBehaviour
         StartIdle();
     }
 
-    private Stats GetStats() => new Stats() { hp = GetRandom(), time = GetRandom(), money = GetRandom() };
+    private Stats GetStats() => new Stats() { Hp = GetRandom(), Gold = GetRandom() };
 
     private float GetRandom() => Random.Range(minRandom + (minRandom / index), maxRandom * index);
 
@@ -106,18 +110,18 @@ public class IdleGame : MonoBehaviour
     {
         if (sliderHp.maxValue == 0 || sliderHp.maxValue <= 1)
         {
-            sliderHp.maxValue = currentEnemy.hp;
+            sliderHp.maxValue = currentEnemy.Hp;
             sliderHp.minValue = 0;
         }
 
-        sliderHp.value = currentEnemy.hp;
+        sliderHp.value = currentEnemy.Hp;
     }
 
     private void IsEnemyDead()
     {
-        if (currentEnemy.hp <= 0)
+        if (currentEnemy.Hp <= 0)
         {
-            money += currentEnemy.money;
+            money += currentEnemy.Gold;
             index++;
             indexWave++;
             StopTimerCoroutine();
@@ -140,7 +144,7 @@ public class IdleGame : MonoBehaviour
     private void DealDamageByTime()
     {
         IsEnemyDead();
-        currentEnemy.hp -= damageAuto * Time.deltaTime;
+        currentEnemy.Hp -= damageAuto * Time.deltaTime;
     }
 
     #endregion private functions
@@ -149,7 +153,7 @@ public class IdleGame : MonoBehaviour
     {
         currentEnemy = GetStats();
         SetRandomSprite();
-        StartTimer(currentEnemy.time);
+        StartTimer(5f);
         sliderHp.maxValue = 1;
     }
 
@@ -168,15 +172,9 @@ public class IdleGame : MonoBehaviour
             var digit = valueFloat / Mathf.Pow(10, countOfDigits - 3); //value until 1000
 
             var newValue = digit.ToString("F0") + "+"+countOfDigitsAfter1000;
+            var intValue = int.Parse(value);
+            Debug.Log($" value = {intValue.ToString("E+0")}");
             return newValue;
         }
     }
-}
-
-[System.Serializable]
-public struct Stats
-{
-    public float hp;
-    public float time;
-    public float money;
 }
