@@ -40,10 +40,10 @@ public class IdleGame : MonoBehaviour
     private void Start()
     {
         //Debug.Log(GetValue("123456"));
-        int number = 123456;
+        //int number = 123456;
 
         // Виведіть число в форматі "E0"
-        Debug.Log(number.ToString("E3"));
+        //Debug.Log(number.ToString("E3"));
     }
 
     #region public functions

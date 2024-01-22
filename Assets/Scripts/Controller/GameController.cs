@@ -19,6 +19,6 @@ public class GameController : MonoBehaviour
             heroController.UpdateUI(item);
         }
 
-        Debug.Log($"DPS = {heroController.GetAllDamage().ToString("E")}");
+        //Debug.Log($"DPS = {heroController.GetAllDamage().ToString("E3")}");
     }
 }
