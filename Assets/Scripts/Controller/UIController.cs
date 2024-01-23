@@ -14,6 +14,7 @@ public class UIController : MonoBehaviour
     [SerializeField] private TMP_Text textGold;
     [SerializeField] private TMP_Text textBlood;
     [SerializeField] private TMP_Text textSouls;
+    [SerializeField] private TMP_Text textSoulsReset;
 
     public void ChangeStateHero() => heroPanel.SetActive(!heroPanel.activeSelf);
     public void ChangeStateSettings() => settingsPanel.SetActive(!settingsPanel.activeSelf);
@@ -22,6 +23,7 @@ public class UIController : MonoBehaviour
     public void UpdateUIGold(string value) => textGold.text = IdleGame.GetValue(value);
     public void UpdateUIBlood(string value) => textBlood.text = IdleGame.GetValue(value);
     public void UpdateUISouls(string value) => textSouls.text = IdleGame.GetValue(value);
+    public void UpdateUISoulsReset(string value) => textSoulsReset.text = IdleGame.GetValue(value);
     public void UpdateDamageAuto(string value) => damageAutoText.text = IdleGame.GetValue(value);
     public void UpdateDamageSelf(string value) => damageSelfText.text = IdleGame.GetValue(value);
 

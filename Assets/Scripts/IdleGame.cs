@@ -17,6 +17,7 @@ public class IdleGame : MonoBehaviour
     [SerializeField] private List<Sprite> sprites;
     [Space, SerializeField] private float minRandom;
     [SerializeField] private float maxRandom;
+    [SerializeField] private float soulsMod;
     [SerializeField] private BigInteger damageAuto;
     [SerializeField] private BigInteger damageSelf;
     [SerializeField] private Stats currentEnemy;
@@ -42,6 +43,11 @@ public class IdleGame : MonoBehaviour
     {
         PlayerData = saveController.PlayerData;
         indexLevel = saveController.PlayerData.LastLevelComplete;
+
+        UpdateUIPanelInfo();
+        uiController.UpdateDamageAuto(damageAuto.ToString());
+        uiController.UpdateDamageSelf(damageSelf.ToString());
+        uiController.UpdateDamageSelf(BigInteger.Add(damageSelf, 1).ToString());
         //Debug.Log(GetValue("123456"));
         //int number = 123456;
 
@@ -57,13 +63,13 @@ public class IdleGame : MonoBehaviour
         currentEnemy.HpValue -= damageSelf;
     }
 
-    public void UpgradeSelfDamage() //rewrite
+    public void UpgradeSelfDamage() //rewrite //?
     {
-        if (gold > index * upgradeIndex)
+        if (gold > indexLevel * upgradeIndex)
         {
-            gold -= index * upgradeIndex;
+            gold -= indexLevel * upgradeIndex;
+            uiController.UpdateDamageSelf(BigInteger.Add(damageSelf, 1).ToString());
         }
-        uiController.UpdateDamageSelf(BigInteger.Add(damageSelf,1).ToString());
     }
 
     #endregion public functions
@@ -171,6 +177,33 @@ public class IdleGame : MonoBehaviour
         PlayerData.Blood = blood;
         PlayerData.Souls = souls;
         saveController.PlayerData = PlayerData;
+    }
+
+    private void UpdateUIPanelInfo()
+    {
+        uiController.UpdateUIBlood(PlayerData.Blood.ToString());
+        uiController.UpdateUIGold(PlayerData.Gold.ToString());
+        uiController.UpdateUISouls(PlayerData.Souls.ToString());
+    }
+
+    public void GetSouls()
+    {
+        foreach(var item in saveController.RegionDatas)
+        {
+            item.IsComplete = false;
+            item.CountMobs = item.DefaultCountMobs;
+        }
+
+        souls += (int)(indexLevel * soulsMod);
+        indexLevel = 0;
+        gold = 0;
+
+        UpdatePlayerData();
+    }
+
+    public void UpdateSoulsQuestion()
+    {
+        uiController.UpdateUISoulsReset((indexLevel * soulsMod).ToString());
     }
 
     public static string GetValue(string value)

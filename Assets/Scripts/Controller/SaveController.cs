@@ -118,6 +118,7 @@ public class RegionData
     public int RegionId;
     public Image SpriteBackground;
     public int CountMobs;
+    public int DefaultCountMobs;
     public bool IsComplete;
     public Stats Stats;
 }
