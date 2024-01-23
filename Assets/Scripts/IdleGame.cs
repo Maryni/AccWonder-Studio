@@ -4,19 +4,15 @@ using UnityEngine;
 using TMPro;
 using UnityEngine.UI;
 using Random = UnityEngine.Random;
-using System;
 
 public class IdleGame : MonoBehaviour
 {
     #region Inspector variables
 
+    [SerializeField] private UIController uiController;
+    [SerializeField] private HeroContentController heroController;
     [SerializeField] private Image mainImage;
     [SerializeField] private Slider sliderHp;
-    [SerializeField] private TMP_Text textMoney;
-    [SerializeField] private TMP_Text textTime;
-    [SerializeField] private TMP_Text textDamageSelf;
-    [SerializeField] private TMP_Text textDamageAuto;
-    [SerializeField] private TMP_Text textWave;
     [SerializeField] private List<Sprite> sprites;
     [Space, SerializeField] private float minRandom;
     [SerializeField] private float maxRandom;
@@ -32,7 +28,7 @@ public class IdleGame : MonoBehaviour
     private float timer;
     private int index = 1;
     private int upgradeIndex = 1;
-    private int indexWave = 0;
+    private int indexLevel = 0;
     private Coroutine timerCoroutine;
 
     #endregion private variables
@@ -60,19 +56,12 @@ public class IdleGame : MonoBehaviour
         {
             money -= index * upgradeIndex;
         }
-
-        damageSelf++;
-        UpdateDamageSelf();
+        uiController.UpdateDamageSelf(damageSelf++);
     }
 
     #endregion public functions
 
     #region private functions
-
-    private void UpdateUI() //rewrite with symbols
-    {
-        textMoney.text = money.ToString("F0");
-    }
 
     private IEnumerator Timer(float value)
     {
@@ -82,29 +71,21 @@ public class IdleGame : MonoBehaviour
             yield return new WaitForEndOfFrame();
             value -= Time.deltaTime;
             timer = value;
+            GetAutoDamage();
             DealDamageByTime();
 
-            UpdateTime();
-            UpdateUI();
+            uiController.UpdateUIMoney(money);
         }
         StartIdle();
     }
-
-    private Stats GetStats() => new Stats() { Hp = GetRandom(), Gold = GetRandom() };
 
     private float GetRandom() => Random.Range(minRandom + (minRandom / index), maxRandom * index);
 
     private void SetRandomSprite() => mainImage.sprite = sprites[Random.Range(0, sprites.Count)];
 
-    private void UpdateTime() => textTime.text = timer.ToString("F1");
-
     private void StartTimer(float value) => timerCoroutine = StartCoroutine(Timer(value));
 
-    private void UpdateDamageSelf() => textDamageSelf.text = damageSelf.ToString("F0"); //rewrite to new Symbols
-
-    private void UpdateDamageAuto() => textDamageAuto.text = damageAuto.ToString("F0"); //rewrite to new Symbols
-
-    private void UpdateWave() => textWave.text = indexWave.ToString("F0");
+    private void GetAutoDamage() => damageAuto = heroController.GetAllDamage();
 
     private void SetHpToSlider()
     {
@@ -123,11 +104,11 @@ public class IdleGame : MonoBehaviour
         {
             money += currentEnemy.Gold;
             index++;
-            indexWave++;
+            indexLevel++;
             StopTimerCoroutine();
-            UpdateUI();
+            uiController.UpdateUIMoney(money);
             StartIdle();
-            UpdateWave();
+            uiController.UpdateLevel(indexLevel);
         }
         SetHpToSlider();
     }
@@ -151,13 +132,30 @@ public class IdleGame : MonoBehaviour
 
     public void StartIdle()
     {
-        currentEnemy = GetStats();
+        ReloadStats();
         SetRandomSprite();
         StartTimer(5f);
         sliderHp.maxValue = 1;
     }
 
-    private string GetValue(string value)
+
+    public void SetStats(Stats stats)
+    {
+        var statsNew = stats;
+
+        statsNew.HpValue = GetGeometryProgressionValue(stats.Hp, stats.HpMod, indexLevel);
+        statsNew.GoldValue = GetGeometryProgressionValue(stats.Gold, stats.GoldMod, indexLevel);
+
+        currentEnemy = statsNew;
+    }
+
+    private void ReloadStats()
+    {
+        currentEnemy.HpValue = GetGeometryProgressionValue(currentEnemy.Hp, currentEnemy.HpMod, indexLevel);
+        currentEnemy.GoldValue = GetGeometryProgressionValue(currentEnemy.Gold, currentEnemy.GoldMod, indexLevel);
+    }
+
+    public static string GetValue(string value)
     {
         if(float.Parse(value) < 1000 )
         {
@@ -168,13 +166,28 @@ public class IdleGame : MonoBehaviour
             var valueFloat = float.Parse(value);
             var countOfDigits = (int)Mathf.Log10(valueFloat) + 1; //all count of digits
             var countOfDigitsAfter1000 = countOfDigits - (int)Mathf.Log10(1000) ; // after 1000
-
             var digit = valueFloat / Mathf.Pow(10, countOfDigits - 3); //value until 1000
-
             var newValue = digit.ToString("F0") + "+"+countOfDigitsAfter1000;
+
             var intValue = int.Parse(value);
-            Debug.Log($" value = {intValue.ToString("E+0")}");
+            //Debug.Log($" value = {intValue.ToString("E+0")}");
             return newValue;
         }
     }
+
+    public static string ReturnValue(string valueOld)
+    {
+        if (float.TryParse(valueOld, System.Globalization.NumberStyles.Float, System.Globalization.CultureInfo.InvariantCulture, out float value))
+        {
+            return value.ToString();
+            
+        }
+        else
+        {
+            return "";
+        }
+    }
+
+    public static float GetGeometryProgressionValue(float baseValue, float firstMod, float increment, float secondMod = 0) => secondMod > 0 ? baseValue * Mathf.Pow(firstMod, (increment * secondMod) - 1) : baseValue * Mathf.Pow(firstMod, (increment) - 1);
+
 }

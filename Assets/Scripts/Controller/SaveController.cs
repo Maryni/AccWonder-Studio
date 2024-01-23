@@ -26,7 +26,7 @@ public enum HeroRarityType
 public class SaveController : MonoBehaviour
 {
     public PlayerData PlayerData;
-    public List<LevelData> LevelDatas;
+    public List<RegionData> RegionDatas;
     public List<SupportHeroes> SupportHeroes;
 
     public bool LoadSuccess = false;
@@ -43,41 +43,42 @@ public class SaveController : MonoBehaviour
 
     private void LoadLevelData()
     {
-        string jsonLevels = PlayerPrefs.GetString("Levels", "");
-        var serializableLevels = JsonUtility.FromJson<List<LevelData>>(jsonLevels);
+        string jsonLevels = PlayerPrefs.GetString("Regions", "");
+        var serializableLevels = JsonUtility.FromJson<List<RegionData>>(jsonLevels);
 
         if (serializableLevels.Count > 0)
         {
             LoadSuccess = true;
-
-            LevelDatas = serializableLevels;
+            RegionDatas = serializableLevels;
         }
 
-        string jsonPlayerData = PlayerPrefs.GetString("PlayerData", "");
+        string jsonPlayerData = PlayerPrefs.GetString("Player", "");
         var serializablePlayerData = JsonUtility.FromJson<PlayerData>(jsonPlayerData);
 
         if (serializablePlayerData != null)
         {
             LoadSuccess = true;
-
             PlayerData = serializablePlayerData;
         }
 
-        string jsonHeroes = PlayerPrefs.GetString("Levels", "");
+        string jsonHeroes = PlayerPrefs.GetString("HeroesData", "");
         var serializableHeroes = JsonUtility.FromJson<List<SupportHeroes>>(jsonHeroes);
 
         if (serializableHeroes.Count > 0)
         {
             LoadSuccess = true;
-
             SupportHeroes = serializableHeroes;
         }
     }
 
     private void SaveLevelData()
     {
-        string jsonLevels = JsonUtility.ToJson(LevelDatas);
-        PlayerPrefs.SetString("Levels", jsonLevels);
+        string jsonRegions = JsonUtility.ToJson(RegionDatas);
+        string jsonPlayer = JsonUtility.ToJson(PlayerData);
+        string jsonHeroes = JsonUtility.ToJson(SupportHeroes);
+        PlayerPrefs.SetString("Regions", jsonRegions);
+        PlayerPrefs.SetString("Player", jsonPlayer);
+        PlayerPrefs.SetString("HeroesData", jsonHeroes);
         PlayerPrefs.Save();
     }
 }
@@ -93,6 +94,7 @@ public class SupportHeroes
     public float Damage;
     public float DamageMod;
     public float CritChance;
+    public float CritMod;
     public Image SpriteEnemy;
     public float Cost;
     public float CostMod;
@@ -110,10 +112,11 @@ public class PlayerData
 }
 
 [System.Serializable]
-public class LevelData
+public class RegionData
 {
-    public int LevelId;
+    public int RegionId;
     public Image SpriteBackground;
+    public int CountMobs;
     public bool IsComplete;
     public Stats Stats;
 }
@@ -122,7 +125,11 @@ public class LevelData
 public struct Stats
 {
     public float Hp;
+    public float HpMod;
+    public float HpValue; // changes in-game only
     public float Gold;
-    public Image SpriteEnemy;
-    public string Name;
+    public float GoldMod;
+    public float GoldValue; // changes in-game only
+    public List<Image> SpritesEnemy;
+    public List<string> Names;
 }

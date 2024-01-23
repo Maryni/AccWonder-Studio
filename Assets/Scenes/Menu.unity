@@ -5469,13 +5469,10 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 4186e2747284249b9be2bb8240c3948d, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  uiController: {fileID: 0}
+  heroController: {fileID: 0}
   mainImage: {fileID: 1258057116}
   sliderHp: {fileID: 1894974959}
-  textMoney: {fileID: 0}
-  textTime: {fileID: 0}
-  textDamageSelf: {fileID: 0}
-  textDamageAuto: {fileID: 0}
-  textWave: {fileID: 891533819}
   sprites: []
   minRandom: 0
   maxRandom: 0
@@ -5483,9 +5480,13 @@ MonoBehaviour:
   damageSelf: 0
   currentEnemy:
     Hp: 0
+    HpMod: 0
+    HpValue: 0
     Gold: 0
-    SpriteEnemy: {fileID: 0}
-    Name: 
+    GoldMod: 0
+    GoldValue: 0
+    SpritesEnemy: []
+    Names: []
 --- !u!1 &613630860
 GameObject:
   m_ObjectHideFlags: 0
@@ -6957,6 +6958,7 @@ MonoBehaviour:
     textLevel: {fileID: 1485818475}
     textMaxLevel: {fileID: 1580556412}
     textUpgradeCost: {fileID: 251309631}
+  SupportHeroes: []
 --- !u!114 &823454842
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -7183,7 +7185,7 @@ GameObject:
   - component: {fileID: 891533820}
   - component: {fileID: 891533819}
   m_Layer: 5
-  m_Name: Text (TMP)
+  m_Name: Text Level(TMP)
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -8559,6 +8561,11 @@ MonoBehaviour:
   heroPanel: {fileID: 823454836}
   settingsPanel: {fileID: 840782885}
   restartPanel: {fileID: 1244942991}
+  damageAutoText: {fileID: 382130474}
+  damageSelfText: {fileID: 917724547}
+  levelText: {fileID: 891533819}
+  textMoney: {fileID: 0}
+  textTime: {fileID: 0}
 --- !u!114 &1093411629
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -11579,15 +11586,59 @@ MonoBehaviour:
     Souls: 0
     Blood: 0
     LastLevelComplete: 0
-  LevelDatas:
-  - LevelId: 0
+  RegionDatas:
+  - RegionId: 0
     SpriteBackground: {fileID: 0}
+    CountMobs: 50
     IsComplete: 0
     Stats:
-      Hp: 0
-      Gold: 0
-      SpriteEnemy: {fileID: 0}
-      Name: 
+      Hp: 10
+      HpMod: 1.2
+      HpValue: 0
+      Gold: 4
+      GoldMod: 1.5
+      GoldValue: 0
+      SpritesEnemy: []
+      Names: []
+  - RegionId: 1
+    SpriteBackground: {fileID: 0}
+    CountMobs: 50
+    IsComplete: 0
+    Stats:
+      Hp: 20
+      HpMod: 1.4
+      HpValue: 0
+      Gold: 8
+      GoldMod: 2
+      GoldValue: 0
+      SpritesEnemy: []
+      Names: []
+  - RegionId: 2
+    SpriteBackground: {fileID: 0}
+    CountMobs: 50
+    IsComplete: 0
+    Stats:
+      Hp: 30
+      HpMod: 1.6
+      HpValue: 0
+      Gold: 12
+      GoldMod: 2.5
+      GoldValue: 0
+      SpritesEnemy: []
+      Names: []
+  - RegionId: 3
+    SpriteBackground: {fileID: 0}
+    CountMobs: 50
+    IsComplete: 0
+    Stats:
+      Hp: 40
+      HpMod: 1.8
+      HpValue: 0
+      Gold: 16
+      GoldMod: 3
+      GoldValue: 0
+      SpritesEnemy: []
+      Names: []
   SupportHeroes:
   - RarityType: 0
     Id: 0
@@ -11597,6 +11648,7 @@ MonoBehaviour:
     Damage: 10
     DamageMod: 1.25
     CritChance: 5
+    CritMod: 1.65
     SpriteEnemy: {fileID: 0}
     Cost: 100
     CostMod: 1.5
@@ -11610,6 +11662,7 @@ MonoBehaviour:
     Damage: 50
     DamageMod: 1.25
     CritChance: 7.5
+    CritMod: 1.6
     SpriteEnemy: {fileID: 0}
     Cost: 500
     CostMod: 1.5
@@ -11623,6 +11676,7 @@ MonoBehaviour:
     Damage: 250
     DamageMod: 1.25
     CritChance: 10
+    CritMod: 1.55
     SpriteEnemy: {fileID: 0}
     Cost: 1000
     CostMod: 1.5
@@ -11636,6 +11690,7 @@ MonoBehaviour:
     Damage: 500
     DamageMod: 1.25
     CritChance: 12
+    CritMod: 1.5
     SpriteEnemy: {fileID: 0}
     Cost: 2500
     CostMod: 1.5
@@ -11649,6 +11704,7 @@ MonoBehaviour:
     Damage: 10000
     DamageMod: 2
     CritChance: 25
+    CritMod: 2
     SpriteEnemy: {fileID: 0}
     Cost: 7500
     CostMod: 1.15
@@ -14177,6 +14233,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   saveController: {fileID: 1536788026}
   heroController: {fileID: 823454841}
+  idleGame: {fileID: 605660594}
 --- !u!4 &1871757076
 Transform:
   m_ObjectHideFlags: 0
