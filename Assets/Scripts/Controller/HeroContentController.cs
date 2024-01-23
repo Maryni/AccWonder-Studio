@@ -4,6 +4,7 @@ using UnityEngine;
 using System.Linq;
 using UnityEngine.UI;
 using TMPro;
+using System.Numerics;
 
 public class HeroContentController : MonoBehaviour
 {
@@ -11,24 +12,25 @@ public class HeroContentController : MonoBehaviour
     public List<SupportHeroes> SupportHeroes;
 
     public HeroStats GetHeroStatsByIndex(int index) => HeroStats[index];
-    public float GetDamage(SupportHeroes stats) => IdleGame.GetGeometryProgressionValue(stats.Damage,stats.DamageMod, stats.Level);
-    public float GetUpgradeCost(SupportHeroes stats) => IdleGame.GetGeometryProgressionValue(stats.Cost,stats.CostMod, stats.Level);
+    public BigInteger GetDamage(SupportHeroes stats) => (BigInteger)IdleGame.GetGeometryProgressionValue(stats.Damage,stats.DamageMod, stats.Level);
+    public BigInteger GetUpgradeCost(SupportHeroes stats) => (BigInteger)IdleGame.GetGeometryProgressionValue(stats.Cost,stats.CostMod, stats.Level);
     
     public void SetList(List<SupportHeroes> stats) => SupportHeroes = stats;
 
-    public float GetAllDamage()
+    public BigInteger GetAllDamage()
     {
-        float result = 0f;
+        BigInteger result = 0;
         foreach(var item in SupportHeroes)
         {
+            BigInteger dpsModed = 0;
             var dps = GetDamage(item);
             var crit = item.CritChance;
             var random = Random.Range(0f, 100f);
             if(crit >= random)
             {
-                dps *= item.CritMod;
+                dpsModed = dps * item.CritMod;
             }
-            result += dps;
+            result += (dps +dpsModed);
         }
         return result;
     }
@@ -64,10 +66,10 @@ public class HeroStats
 {
     public int Id;
     public string Name;
-    public float DPS;
+    public BigInteger DPS;
     public int Level;
     public int MaxLevel;
-    public float UpgradeCost;
+    public BigInteger UpgradeCost;
     public Image Image;
     public TMP_Text textName;
     public TMP_Text textDPS;

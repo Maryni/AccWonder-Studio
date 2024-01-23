@@ -11,14 +11,18 @@ public class UIController : MonoBehaviour
     [SerializeField] private TMP_Text damageAutoText;
     [SerializeField] private TMP_Text damageSelfText;
     [SerializeField] private TMP_Text levelText;
-    [SerializeField] private TMP_Text textMoney;
-    [SerializeField] private TMP_Text textTime;
+    [SerializeField] private TMP_Text textGold;
+    [SerializeField] private TMP_Text textBlood;
+    [SerializeField] private TMP_Text textSouls;
 
     public void ChangeStateHero() => heroPanel.SetActive(!heroPanel.activeSelf);
     public void ChangeStateSettings() => settingsPanel.SetActive(!settingsPanel.activeSelf);
     public void ChangeStateRestart() => restartPanel.SetActive(!restartPanel.activeSelf);
-    public void UpdateUIMoney(float value) => textMoney.text = value.ToString("F0");
     public void UpdateLevel(int value) => levelText.text = value.ToString();
-    public void UpdateDamageAuto(float value) => damageAutoText.text = IdleGame.GetValue(value.ToString());
-    public void UpdateDamageSelf(float value) => damageSelfText.text = IdleGame.GetValue(value.ToString());
+    public void UpdateUIGold(string value) => textGold.text = IdleGame.GetValue(value);
+    public void UpdateUIBlood(string value) => textBlood.text = IdleGame.GetValue(value);
+    public void UpdateUISouls(string value) => textSouls.text = IdleGame.GetValue(value);
+    public void UpdateDamageAuto(string value) => damageAutoText.text = IdleGame.GetValue(value);
+    public void UpdateDamageSelf(string value) => damageSelfText.text = IdleGame.GetValue(value);
+
 }

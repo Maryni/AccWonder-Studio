@@ -1,6 +1,7 @@
 using System;
 using System.Collections;
 using System.Collections.Generic;
+using System.Numerics;
 using UnityEngine;
 using UnityEngine.UI;
 
@@ -94,7 +95,7 @@ public class SupportHeroes
     public float Damage;
     public float DamageMod;
     public float CritChance;
-    public float CritMod;
+    public int CritMod;
     public Image SpriteEnemy;
     public float Cost;
     public float CostMod;
@@ -105,7 +106,7 @@ public class SupportHeroes
 [System.Serializable]
 public class PlayerData
 {
-    public int Money;
+    public BigInteger Gold;
     public int Souls;
     public int Blood;
     public int LastLevelComplete;
@@ -126,10 +127,10 @@ public struct Stats
 {
     public float Hp;
     public float HpMod;
-    public float HpValue; // changes in-game only
+    public BigInteger HpValue; // changes in-game only
     public float Gold;
     public float GoldMod;
-    public float GoldValue; // changes in-game only
-    public List<Image> SpritesEnemy;
+    public BigInteger GoldValue; // changes in-game only
+    public List<Sprite> SpritesEnemy;
     public List<string> Names;
 }
