@@ -47,7 +47,7 @@ public class SaveController : MonoBehaviour
         string jsonLevels = PlayerPrefs.GetString("Regions", "");
         var serializableLevels = JsonUtility.FromJson<List<RegionData>>(jsonLevels);
 
-        if (serializableLevels.Count > 0)
+        if (serializableLevels != null && serializableLevels.Count > 0)
         {
             LoadSuccess = true;
             RegionDatas = serializableLevels;
