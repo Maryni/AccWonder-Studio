@@ -18,11 +18,11 @@ public class IdleGame : MonoBehaviour
     [Space, SerializeField] private float minRandom;
     [SerializeField] private float maxRandom;
     [SerializeField] private float soulsMod;
-    [SerializeField] private BigInteger damageAuto;
-    [SerializeField] private BigInteger damageSelf;
     [SerializeField] private Stats currentEnemy;
 
     public PlayerData PlayerData;
+    public BigInteger damageAuto;
+    public BigInteger damageSelf;
 
     #endregion Inspector variables
 
@@ -95,9 +95,7 @@ public class IdleGame : MonoBehaviour
     //private float GetRandom() => Random.Range(minRandom + (minRandom / index), maxRandom * index);
 
     private void SetRandomSprite() => mainImage.sprite = sprites[Random.Range(0, sprites.Count)];
-
     private void StartTimer(float value) => timerCoroutine = StartCoroutine(Timer(value));
-
     private void GetAutoDamage() => damageAuto = heroController.GetAllDamage();
 
     private void SetHpToSlider()
@@ -148,11 +146,12 @@ public class IdleGame : MonoBehaviour
     {
         ReloadStats();
         UpdatePlayerData();
-        //SetRandomSprite(); //need sprite from designer(artist)
+        SetRandomSprite(); 
         StartTimer(30f);
         sliderHp.maxValue = 1;
     }
-
+    
+    
     public void SetStats(Stats stats)
     {
         var statsNew = stats;
