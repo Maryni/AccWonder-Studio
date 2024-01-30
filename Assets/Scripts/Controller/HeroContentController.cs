@@ -35,7 +35,15 @@ public class HeroContentController : MonoBehaviour
         return result;
     }
 
-    public void UpdateUI(SupportHeroes stats)
+    public void UpdateHeroUI()
+    {
+        foreach (var stat in SupportHeroes)
+        {
+            UpdateUI(stat);
+        }
+    }
+    
+    private void UpdateUI(SupportHeroes stats)
     {
         var needStatsToChange = HeroStats.FirstOrDefault(x => x.Id == stats.Id);
 
@@ -44,6 +52,7 @@ public class HeroContentController : MonoBehaviour
         needStatsToChange.DPS = GetDamage(stats);
         needStatsToChange.MaxLevel = stats.MaxLevel;
         needStatsToChange.UpgradeCost = GetUpgradeCost(stats);
+        needStatsToChange.Image.sprite = stats.SpriteHero;
 
         QuickUpdate();
     }

@@ -16,12 +16,9 @@ public class GameController : MonoBehaviour
 
     private void Init()
     {
-        foreach(var item in saveController.SupportHeroes)
-        {
-            heroController.UpdateUI(item);
-        }
-
         heroController.SetList(saveController.SupportHeroes);
+        heroController.UpdateHeroUI();
+        
         idleGame.SetStats(saveController.RegionDatas.FirstOrDefault(x => !x.IsComplete).Stats);
         //Debug.Log($"DPS = {heroController.GetAllDamage().ToString("E3")}");
     }

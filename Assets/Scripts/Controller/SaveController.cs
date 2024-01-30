@@ -96,7 +96,7 @@ public class SupportHeroes
     public float DamageMod;
     public float CritChance;
     public int CritMod;
-    public Image SpriteEnemy;
+    public Sprite SpriteHero;
     public float Cost;
     public float CostMod;
     public float CostRarity;
@@ -116,7 +116,7 @@ public class PlayerData
 public class RegionData
 {
     public int RegionId;
-    public Image SpriteBackground;
+    public Sprite SpriteBackground;
     public int CountMobs;
     public int DefaultCountMobs;
     public bool IsComplete;
