@@ -1,9 +1,7 @@
-using System;
-using System.Collections;
 using System.Collections.Generic;
+using System.Linq;
 using System.Numerics;
 using UnityEngine;
-using UnityEngine.UI;
 
 public enum HeroRarityType
 {
@@ -81,6 +79,25 @@ public class SaveController : MonoBehaviour
         PlayerPrefs.SetString("Player", jsonPlayer);
         PlayerPrefs.SetString("HeroesData", jsonHeroes);
         PlayerPrefs.Save();
+    }
+
+    public void UpdateValues(PlayerData player = null, RegionData region = null, List<SupportHeroes> heroes = null)
+    {
+        if(player != null)
+            PlayerData = player;
+        if(region != null)
+        {
+            var findReg = RegionDatas.FirstOrDefault(x=>x.RegionId == region.RegionId);
+            if(findReg == null)
+            {
+                RegionDatas.ForEach(x => x.IsComplete = false);
+            }
+            else 
+                findReg = region;
+        }
+            
+        if(heroes != null)
+            SupportHeroes = heroes;
     }
 }
 

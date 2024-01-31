@@ -5,11 +5,14 @@ using System.Linq;
 using UnityEngine.UI;
 using TMPro;
 using System.Numerics;
+using System;
+using Unity.VisualScripting.Antlr3.Runtime.Misc;
 
 public class HeroContentController : MonoBehaviour
 {
     public List<HeroStats> HeroStats;
     public List<SupportHeroes> SupportHeroes;
+    public Action onUpdate;
 
     public HeroStats GetHeroStatsByIndex(int index) => HeroStats[index];
     public BigInteger GetDamage(SupportHeroes stats) => (BigInteger)IdleGame.GetGeometryProgressionValue(stats.Damage,stats.DamageMod, stats.Level);
@@ -22,15 +25,18 @@ public class HeroContentController : MonoBehaviour
         BigInteger result = 0;
         foreach(var item in SupportHeroes)
         {
-            BigInteger dpsModed = 0;
-            var dps = GetDamage(item);
-            var crit = item.CritChance;
-            var random = Random.Range(0f, 100f);
-            if(crit >= random)
+            if(item.Level>0)
             {
-                dpsModed = dps * item.CritMod;
+                BigInteger dpsModed = 0;
+                var dps = GetDamage(item);
+                var crit = item.CritChance;
+                var random = UnityEngine.Random.Range(0f, 100f);
+                if (crit >= random)
+                {
+                    dpsModed = dps * item.CritMod;
+                }
+                result += (dps + dpsModed);
             }
-            result += (dps +dpsModed);
         }
         return result;
     }
@@ -62,11 +68,29 @@ public class HeroContentController : MonoBehaviour
         foreach(var item in HeroStats)
         {
             item.textName.text = item.Name;
-            item.textDPS.text = item.DPS.ToString();
+            item.textDPS.text = IdleGame.GetValue(item.DPS.ToString());
             item.textLevel.text = item.Level.ToString();
             item.textMaxLevel.text = item.MaxLevel.ToString();
-            item.textUpgradeCost.text = item.UpgradeCost.ToString();
+            item.textUpgradeCost.text = IdleGame.GetValue(item.UpgradeCost.ToString());
         }
+    }
+
+    public void UpgradeHero(int id)
+    {
+        SupportHeroes current = SupportHeroes.FirstOrDefault(x => x.Id == id);
+        if(current.Level <current.MaxLevel)
+        {
+            current.Level++;
+
+        }
+        UpdateUI(current);
+        onUpdate?.Invoke();
+    }
+
+    public BigInteger CostUpgradeHero(int id)
+    {
+        var a = HeroStats.FirstOrDefault(x => x.Id == id);
+        return a.UpgradeCost;
     }
 }
 

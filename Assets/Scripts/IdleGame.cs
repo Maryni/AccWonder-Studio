@@ -1,6 +1,8 @@
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.Numerics;
+using TMPro;
 using UnityEngine;
 using UnityEngine.UI;
 using Random = UnityEngine.Random;
@@ -15,14 +17,19 @@ public class IdleGame : MonoBehaviour
     [SerializeField] private Image mainImage;
     [SerializeField] private Slider sliderHp;
     [SerializeField] private List<Sprite> sprites;
+    [SerializeField] private List<string> names;
+    [SerializeField] private GameObject slice;
+    [SerializeField] private GameObject stars;
     [Space, SerializeField] private float minRandom;
     [SerializeField] private float maxRandom;
     [SerializeField] private float soulsMod;
     [SerializeField] private Stats currentEnemy;
 
+    public RegionData RegionData;
     public PlayerData PlayerData;
     public BigInteger damageAuto;
     public BigInteger damageSelf;
+    public Action onUpdate;
 
     #endregion Inspector variables
 
@@ -36,6 +43,7 @@ public class IdleGame : MonoBehaviour
     private int upgradeIndex = 1;
     private int indexLevel = 0;
     private Coroutine timerCoroutine;
+    private BigInteger upgradeCost;
 
     #endregion private variables
 
@@ -43,16 +51,12 @@ public class IdleGame : MonoBehaviour
     {
         PlayerData = saveController.PlayerData;
         indexLevel = saveController.PlayerData.LastLevelComplete;
+        damageSelf = BigInteger.Add(damageSelf, 1);
 
         UpdateUIPanelInfo();
+        uiController.UpdateLevel(indexLevel);
         uiController.UpdateDamageAuto(damageAuto.ToString());
         uiController.UpdateDamageSelf(damageSelf.ToString());
-        uiController.UpdateDamageSelf(BigInteger.Add(damageSelf, 1).ToString());
-        //Debug.Log(GetValue("123456"));
-        //int number = 123456;
-
-        // Виведіть число в форматі "E0"
-        //Debug.Log(number.ToString("E3"));
     }
 
     #region public functions
@@ -61,16 +65,40 @@ public class IdleGame : MonoBehaviour
     {
         IsEnemyDead();
         currentEnemy.HpValue -= damageSelf;
+        SetHpToSlider();
+        slice.SetActive(true);
+        slice.GetComponent<Animator>().SetTrigger("Slice");
     }
 
-    public void UpgradeSelfDamage() //rewrite //?
+    public void UpgradeSelfDamage() 
     {
-        if (gold > indexLevel * upgradeIndex)
+        if (gold > upgradeCost)
         {
-            gold -= indexLevel * upgradeIndex;
-            uiController.UpdateDamageSelf(BigInteger.Add(damageSelf, 1).ToString());
+            gold -= upgradeCost;
+            damageSelf = BigInteger.Add(damageSelf, 1);
+            uiController.UpdateDamageSelf(damageSelf.ToString());
+            upgradeIndex++;
         }
+        SetSelfUpgradeToUI();
     }
+
+    public void SetSelfUpgradeToUI()
+    {
+        upgradeCost = index * upgradeIndex;
+        uiController.UpdateSelfDamageUpgrade(upgradeCost.ToString());
+    }
+
+    public void UpgradeHeroById(int id)
+    {
+        if(gold > heroController.CostUpgradeHero(id))
+        {
+            heroController.UpgradeHero(id);
+            gold = gold - heroController.CostUpgradeHero(id);
+        }
+
+    }
+
+    public void SetRegionData(RegionData data) => RegionData = data;
 
     #endregion public functions
 
@@ -85,6 +113,7 @@ public class IdleGame : MonoBehaviour
             value -= Time.deltaTime;
             timer = value;
             GetAutoDamage();
+            uiController.UpdateDamageAuto(damageAuto.ToString());
             DealDamageByTime();
 
             uiController.UpdateUIGold(gold.ToString());
@@ -92,9 +121,8 @@ public class IdleGame : MonoBehaviour
         StartIdle();
     }
 
-    //private float GetRandom() => Random.Range(minRandom + (minRandom / index), maxRandom * index);
-
     private void SetRandomSprite() => mainImage.sprite = sprites[Random.Range(0, sprites.Count)];
+    private void SetRandomName() => uiController.UpdateEnemyName(names[Random.Range(0, currentEnemy.Names.Count)]);
     private void StartTimer(float value) => timerCoroutine = StartCoroutine(Timer(value));
     private void GetAutoDamage() => damageAuto = heroController.GetAllDamage();
 
@@ -102,7 +130,7 @@ public class IdleGame : MonoBehaviour
     {
         if (sliderHp.maxValue == 0 || sliderHp.maxValue <= 1)
         {
-            sliderHp.maxValue = float.Parse(currentEnemy.HpValue.ToString());
+            sliderHp.maxValue = int.Parse(currentEnemy.HpValue.ToString());
             sliderHp.minValue = 0;
         }
 
@@ -111,20 +139,30 @@ public class IdleGame : MonoBehaviour
 
     private void IsEnemyDead()
     {
-        if (currentEnemy.Hp <= 0)
+        if (currentEnemy.HpValue <= 0)
         {
-            gold += (int)GetGeometryProgressionValue(currentEnemy.Gold, currentEnemy.GoldMod, indexLevel);
+            stars.SetActive(true);
+            stars.GetComponent<Animator>().SetTrigger("Die");
+            gold = BigInteger.Add(gold,(BigInteger)GetGeometryProgressionValue(currentEnemy.Gold, currentEnemy.GoldMod, indexLevel+1));
             index++;
             indexLevel++;
             PlayerData.LastLevelComplete++;
+
+            if(indexLevel > RegionData.CountMobs)
+            {
+                RegionData.IsComplete = true;
+                indexLevel = 0;
+            }
+
+            onUpdate?.Invoke();
             StopTimerCoroutine();
-            uiController.UpdateUIGold(gold.ToString("E3"));
+            uiController.UpdateUIGold(gold.ToString());
             uiController.UpdateLevel(indexLevel);
             StartIdle();
         }
         SetHpToSlider();
     }
-
+    
     private void StopTimerCoroutine()
     {
         if (timerCoroutine != null)
@@ -136,8 +174,12 @@ public class IdleGame : MonoBehaviour
 
     private void DealDamageByTime()
     {
+        if(damageAuto >1)
+        {
+            currentEnemy.HpValue -= (damageAuto/60);
+        }
+        SetHpToSlider();
         IsEnemyDead();
-        currentEnemy.HpValue -= damageAuto;
     }
 
     #endregion private functions
@@ -146,9 +188,11 @@ public class IdleGame : MonoBehaviour
     {
         ReloadStats();
         UpdatePlayerData();
-        SetRandomSprite(); 
+        SetRandomSprite();
+        SetRandomName();
         StartTimer(30f);
         sliderHp.maxValue = 1;
+        SetHpToSlider();
     }
     
     
@@ -156,17 +200,22 @@ public class IdleGame : MonoBehaviour
     {
         var statsNew = stats;
 
-        statsNew.HpValue = (BigInteger)GetGeometryProgressionValue(stats.Hp, stats.HpMod, indexLevel);
-        statsNew.GoldValue = (BigInteger)GetGeometryProgressionValue(stats.Gold, stats.GoldMod, indexLevel);
+        statsNew.HpValue = (BigInteger)GetGeometryProgressionValue(stats.Hp, stats.HpMod, indexLevel+1);
+        statsNew.GoldValue = (BigInteger)GetGeometryProgressionValue(stats.Gold, stats.GoldMod, indexLevel+1);
         sprites = stats.SpritesEnemy;
+        names = stats.Names;
+        //////
 
         currentEnemy = statsNew;
+        //uiController.UpgradeUIBackground(back)
     }
+
+    public void SetBackground(Sprite sprite) => uiController.UpgradeUIBackground(sprite);
 
     private void ReloadStats()
     {
-        currentEnemy.HpValue = (BigInteger)GetGeometryProgressionValue(currentEnemy.Hp, currentEnemy.HpMod, indexLevel);
-        currentEnemy.GoldValue = (BigInteger)GetGeometryProgressionValue(currentEnemy.Gold, currentEnemy.GoldMod, indexLevel);
+        currentEnemy.HpValue = (BigInteger)GetGeometryProgressionValue(currentEnemy.Hp, currentEnemy.HpMod, indexLevel+1);
+        currentEnemy.GoldValue = (BigInteger)GetGeometryProgressionValue(currentEnemy.Gold, currentEnemy.GoldMod, indexLevel+1);
         sprites = currentEnemy.SpritesEnemy;
     }
 
@@ -194,9 +243,10 @@ public class IdleGame : MonoBehaviour
         }
 
         souls += (int)(indexLevel * soulsMod);
+        PlayerData.LastLevelComplete = 0;
         indexLevel = 0;
         gold = 0;
-
+        onUpdate?.Invoke();
         UpdatePlayerData();
     }
 
@@ -205,25 +255,7 @@ public class IdleGame : MonoBehaviour
         uiController.UpdateUISoulsReset((indexLevel * soulsMod).ToString());
     }
 
-    public static string GetValue(string value)
-    {
-        if(float.Parse(value) < 1000 )
-        {
-            return value;
-        }
-        else
-        {
-            var valueFloat = float.Parse(value);
-            var countOfDigits = (int)Mathf.Log10(valueFloat) + 1; //all count of digits
-            var countOfDigitsAfter1000 = countOfDigits - (int)Mathf.Log10(1000) ; // after 1000
-            var digit = valueFloat / Mathf.Pow(10, countOfDigits - 3); //value until 1000
-            var newValue = digit.ToString("F0") + "+" + countOfDigitsAfter1000;
-
-            var intValue = BigInteger.Parse(value);
-            //Debug.Log($" value = {intValue.ToString("E+0")}");
-            return newValue;
-        }
-    }
+    public static string GetValue(string value) => BigInteger.Parse(value).ToString("E2");
 
     public static string ReturnValue(string valueOld)
     {

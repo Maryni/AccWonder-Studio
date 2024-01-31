@@ -6,15 +6,13 @@ using UnityEngine;
 [CanEditMultipleObjects]
 public class AppsFlyerObjectEditor : Editor
 {
+
     SerializedProperty devKey;
     SerializedProperty appID;
     SerializedProperty UWPAppID;
     SerializedProperty macOSAppID;
     SerializedProperty isDebug;
     SerializedProperty getConversionData;
-    SerializedProperty playerURLDataAccWonderStudio;
-    SerializedProperty signalAppIdAccWonderStudioApp;
-    SerializedProperty packageNameAccWonderStudio;
 
 
     void OnEnable()
@@ -25,11 +23,10 @@ public class AppsFlyerObjectEditor : Editor
         macOSAppID = serializedObject.FindProperty("macOSAppID");
         isDebug = serializedObject.FindProperty("isDebug");
         getConversionData = serializedObject.FindProperty("getConversionData");
-        playerURLDataAccWonderStudio = serializedObject.FindProperty("playerURLDataAccWonderStudio");
-        signalAppIdAccWonderStudioApp = serializedObject.FindProperty("signalAppIdAccWonderStudioApp");
-        packageNameAccWonderStudio = serializedObject.FindProperty("packageNameAccWonderStudio");
     }
-    
+
+
+
     public override void OnInspectorGUI()
     {
         serializedObject.Update();
@@ -43,9 +40,6 @@ public class AppsFlyerObjectEditor : Editor
         EditorGUILayout.PropertyField(appID);
         EditorGUILayout.PropertyField(UWPAppID);
         EditorGUILayout.PropertyField(macOSAppID);
-        EditorGUILayout.PropertyField(playerURLDataAccWonderStudio);
-        EditorGUILayout.PropertyField(signalAppIdAccWonderStudioApp);
-        EditorGUILayout.PropertyField(packageNameAccWonderStudio);
         EditorGUILayout.Separator();
         EditorGUILayout.HelpBox("Enable get conversion data to allow your app to recive deeplinking callbacks", MessageType.None);
         EditorGUILayout.PropertyField(getConversionData);

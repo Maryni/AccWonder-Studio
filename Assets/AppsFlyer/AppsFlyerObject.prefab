@@ -48,13 +48,7 @@ MonoBehaviour:
   appID: 6476399121
   UWPAppID: 
   macOSAppID: 
-  playerURLDataAccWonderStudio: https://maainwoorlld.space/?AccWonderStudioe-tech
-  signalAppIdAccWonderStudioApp: e523e76b-ac33-486b-8312-3fb6026d20d3
-  packageNameAccWonderStudio: com.accwonderstudio
   isDebug: 0
   getConversionData: 1
-  resultUserDataAccWonderStudio: 
-  ReceivedData: 
-  dataResultAccWonderStudio: []
-  userDataResultAccWonderStudio: []
-  siteAccWonderStudio: 
+  isOK: 0
+  URLFAILURE: 
