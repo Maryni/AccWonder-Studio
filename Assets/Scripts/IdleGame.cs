@@ -5,6 +5,7 @@ using System.Numerics;
 using TMPro;
 using UnityEngine;
 using UnityEngine.UI;
+using UnityEngine.UIElements;
 using Random = UnityEngine.Random;
 
 public class IdleGame : MonoBehaviour
@@ -14,8 +15,8 @@ public class IdleGame : MonoBehaviour
     [SerializeField] private UIController uiController;
     [SerializeField] private HeroContentController heroController;
     [SerializeField] private SaveController saveController;
-    [SerializeField] private Image mainImage;
-    [SerializeField] private Slider sliderHp;
+    [SerializeField] private UnityEngine.UI.Image mainImage;
+    [SerializeField] private UnityEngine.UI.Slider sliderHp;
     [SerializeField] private List<Sprite> sprites;
     [SerializeField] private List<string> names;
     [SerializeField] private GameObject slice;
@@ -41,9 +42,11 @@ public class IdleGame : MonoBehaviour
     private float timer;
     private int index = 1;
     private int upgradeIndex = 1;
-    private int indexLevel = 0;
+    private int indexLevel;
     private Coroutine timerCoroutine;
     private BigInteger upgradeCost;
+    private BigInteger maxValue = 1000000000000;
+    private int soulsDamageMod;
 
     #endregion private variables
 
@@ -53,6 +56,7 @@ public class IdleGame : MonoBehaviour
         indexLevel = saveController.PlayerData.LastLevelComplete;
         damageSelf = BigInteger.Add(damageSelf, 1);
 
+        //sliderHp.onValueChanged.AddListener(OnSliderValueChanged);
         UpdateUIPanelInfo();
         uiController.UpdateLevel(indexLevel);
         uiController.UpdateDamageAuto(damageAuto.ToString());
@@ -113,8 +117,8 @@ public class IdleGame : MonoBehaviour
             value -= Time.deltaTime;
             timer = value;
             GetAutoDamage();
-            uiController.UpdateDamageAuto(damageAuto.ToString());
             DealDamageByTime();
+            uiController.UpdateDamageAuto(damageAuto.ToString());
 
             uiController.UpdateUIGold(gold.ToString());
         }
@@ -128,13 +132,30 @@ public class IdleGame : MonoBehaviour
 
     private void SetHpToSlider()
     {
-        if (sliderHp.maxValue == 0 || sliderHp.maxValue <= 1)
-        {
-            sliderHp.maxValue = int.Parse(currentEnemy.HpValue.ToString());
-            sliderHp.minValue = 0;
-        }
+        float normalizedValue = MapTo01(currentEnemy.HpValue, BigInteger.Zero, maxValue);
+        sliderHp.value = normalizedValue;
+    }
 
-        sliderHp.value = float.Parse(currentEnemy.HpValue.ToString());
+    public void OnSliderValueChanged(float normalizedValue)
+    {
+        currentEnemy.HpValue = MapFrom01(normalizedValue, BigInteger.Zero, maxValue);
+    }
+
+    private float MapTo01(BigInteger value, BigInteger min, BigInteger max)
+    {
+        BigInteger range = max - min;
+        BigInteger clampedValue = BigInteger.Max(BigInteger.Min(value, max), min);
+        BigInteger scaledValue = clampedValue - min;
+
+        return (float)scaledValue/ (float)range;
+    }
+
+    private BigInteger MapFrom01(float normalizedValue, BigInteger min, BigInteger max)
+    {
+        BigInteger range = max - min;
+        BigInteger scaledValue = (BigInteger)(normalizedValue * (double)range);
+
+        return scaledValue + min;
     }
 
     private void IsEnemyDead()
@@ -176,7 +197,12 @@ public class IdleGame : MonoBehaviour
     {
         if(damageAuto >1)
         {
-            currentEnemy.HpValue -= (damageAuto/60);
+            if(souls > 10)
+            {
+                int tens = (souls / 10) % 10;
+                soulsDamageMod = tens;
+            }
+            currentEnemy.HpValue -= ((damageAuto * soulsDamageMod)/60);
         }
         SetHpToSlider();
         IsEnemyDead();
@@ -191,7 +217,6 @@ public class IdleGame : MonoBehaviour
         SetRandomSprite();
         SetRandomName();
         StartTimer(30f);
-        sliderHp.maxValue = 1;
         SetHpToSlider();
     }
     
@@ -204,7 +229,7 @@ public class IdleGame : MonoBehaviour
         statsNew.GoldValue = (BigInteger)GetGeometryProgressionValue(stats.Gold, stats.GoldMod, indexLevel+1);
         sprites = stats.SpritesEnemy;
         names = stats.Names;
-        //////
+        maxValue = statsNew.HpValue;
 
         currentEnemy = statsNew;
         //uiController.UpgradeUIBackground(back)
@@ -224,7 +249,7 @@ public class IdleGame : MonoBehaviour
         PlayerData.Gold = gold;
         PlayerData.Blood = blood;
         PlayerData.Souls = souls;
-        saveController.PlayerData = PlayerData;
+        PlayerData.LastLevelComplete = indexLevel;
     }
 
     private void UpdateUIPanelInfo()
